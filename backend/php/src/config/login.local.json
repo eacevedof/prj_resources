@@ -1,0 +1,22 @@
+[
+  {
+    "domain": "*",
+    "users": [
+      {
+        "id": 1,
+        "user": "fulanito",
+        "password": "$2y$10$dpGK1d4e9mo/b94qa6nSouwBjXtcyQtxz/YOcn5Xn5HOD8E7RZ2nS"
+      }
+    ]
+  },
+  {
+    "domain": "localhost:3000",
+    "users": [
+      {
+        "id": 1,
+        "user": "fulanito",
+        "password": "$2y$10$dpGK1d4e9mo/b94qa6nSouwBjXtcyQtxz/YOcn5Xn5HOD8E7RZ2nS"
+      }
+    ]
+  }
+]

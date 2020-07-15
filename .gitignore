@@ -1,0 +1,12 @@
+!/backend/php/vendor/
+/backend/php/vendor/*
+!/backend/php/vendor/theframework/
+/backend/php/tests/logs/
+/backend/php/src/logs/
+/backend/php/src/config/config.php
+/backend/php/src/config/contexts.json
+/backend/php/src/config/login.json
+/backend/php/src/config/encdecrypt.json
+/backend/php/public/temp/
+.idea
+/backend/php/.env.local
