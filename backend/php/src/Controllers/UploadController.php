@@ -9,26 +9,25 @@
  */
 namespace App\Controllers\Security;
 
-use App\Services\Security\LoginService;
 use TheFramework\Helpers\HelperJson;
 use App\Controllers\AppController;
+use App\Services\Security\UploadService;
 
 class UploadController extends AppController
 {
 
     /**
      * ruta:
-     *  <dominio>/security/login
+     *  <dominio>/upload
      */
     public function index()
     {
         $domain = $_SERVER["REMOTE_HOST"] ?? "*";
-        $this->logd($domain,"login.index.domain");
-        $this->request_log();
+        //$this->logd($domain,"upload.index.domain");
+        //$this->request_log();
         $oJson = new HelperJson();
         try{
-            //post para login: user, password
-            $oServ = new LoginService($domain,$this->get_post());
+            $oServ = new UploadService($domain,$this->get_files());
             $token = $oServ->get_token();
             $oJson->set_payload(["token"=>$token])->show();
         }
@@ -40,28 +39,4 @@ class UploadController extends AppController
         }
     }
 
-    /**
-     * ruta:
-     *  <dominio>/security/is-valid-token
-     */
-    public function is_valid_token()
-    {
-        $domain = $_SERVER["REMOTE_HOST"] ?? "*";
-        $this->logd($domain,"login.is_valid_token.domain");
-        $oJson = new HelperJson();
-        try{
-            $token = $this->get_post(self::KEY_RESOURCE_USERTOKEN);
-            $this->logd($token,"login.is_valid_token.header");
-            $this->logd("domain: $domain, token: $token");
-            $oServ = new LoginService($domain);
-            $oServ->is_valid($token);
-            $oJson->set_payload(["isvalid"=>true])->show();
-        }
-        catch (\Exception $e)
-        {
-            $oJson->set_code(HelperJson::CODE_FORBIDDEN)->
-            set_error([$e->getMessage()])->
-            show(1);
-        }
-    }
 }//UploadController

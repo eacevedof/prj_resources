@@ -4,6 +4,7 @@
 
 return [   
     ["url"=>"/","controller"=>"App\Controllers\NotFoundController","method"=>"index"],
+    ["url"=>"/upload","controller"=>"App\Controllers\UploadController","method"=>"index"],
     ["url"=>"/security/get-password","controller"=>"App\Controllers\Security\PasswordController","method"=>"index"],
     ["url"=>"/security/get-signature","controller"=>"App\Controllers\Security\SignatureController","method"=>"index"],
     ["url"=>"/security/is-valid-signature","controller"=>"App\Controllers\Security\SignatureController","method"=>"is_valid_signature"],
