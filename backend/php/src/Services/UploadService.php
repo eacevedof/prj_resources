@@ -14,6 +14,12 @@ class UploadService extends AppService
         "php","js","py","html"
     ];
 
+    const ALLOWED_FOLDERS = [
+      "tinymarket.es"
+    ];
+
+    const MAX_SIZE = 10000000;
+
     public function __construct($post,$files)
     {
         $this->post = $post;
@@ -29,6 +35,7 @@ class UploadService extends AppService
         if(!isset($this->post["folderdomain"]) || trim($this->post["folderdomain"])==="") throw new Exception("No domain selected");
         $this->arprocess = $this->_get_valid_files();
         if(!$this->arprocess) throw new Exception("No files to process");
+        if(!in_array($this->post["folderdomain"],self::ALLOWED_FOLDERS)) throw new Exception("Forbidden folderdomain: {$this->post["folderdomain"]}");
     }
 
     private function _get_basename($rawname){return basename($rawname);}
@@ -47,6 +54,8 @@ class UploadService extends AppService
         return in_array($extension,self::INVALID_EXTENSIONS);
     }
 
+    private function _is_oversized($size){return $size > self::MAX_SIZE;}
+
     private function _get_valid_files()
     {
         $arvalid = [];
@@ -64,6 +73,12 @@ class UploadService extends AppService
             $this->add_error("file: {$this->files["fil-one"]["name"]} contains forbidden extension");
             return;
         }
+
+        if($this->_is_oversized((int)$this->files["fil-one"]["size"])){
+            $this->add_error("file: {$this->files["fil-one"]["name"]} is larger ({$this->files["fil-one"]["size"]}) than allowed {self::MAX_SIZE}");
+            return;
+        }
+
 
         $today = date("Ymd");
         $folderdomain = $this->post["folderdomain"];
