@@ -4,17 +4,5 @@
     "sslenc_method":"AES-256-CBC",
     "sslenc_key":"@12345678@",
     "sslsalt":"@#$.saltall.$#@"
-  },
-  {
-    "domain": "localhost:800",
-    "sslenc_method":"AES-256-CBC",
-    "sslenc_key":"@11111111@",
-    "sslsalt":"@#$.salt.$#@"
-  },
-  {
-    "domain": "localhost:200",
-    "sslenc_method":"AES-256-CBC",
-    "sslenc_key":"@11111111@",
-    "sslsalt":"@#$.salt.$#@"
   }
 ]
