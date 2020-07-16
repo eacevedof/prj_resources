@@ -8,9 +8,10 @@ class UploadService extends AppService
     private $post;
     private $rootpath;
     private $url;
+    private $arprocess;
 
     const INVALID_EXTENSIONS = [
-        "php","js","py",
+        "php","js","py","html"
     ];
 
     public function __construct($post,$files)
@@ -26,6 +27,8 @@ class UploadService extends AppService
         if(!$this->post) throw new Exception("Empty post");
         if(!$this->files) throw new Exception("Empty files");
         if(!isset($this->post["folderdomain"]) || trim($this->post["folderdomain"])==="") throw new Exception("No domain selected");
+        $this->arprocess = $this->_get_valid_files();
+        if(!$this->arprocess) throw new Exception("No files to process");
     }
 
     private function _get_basename($rawname){return basename($rawname);}
@@ -42,6 +45,16 @@ class UploadService extends AppService
         $extension = trim($extension);
         $extension = strtolower($extension);
         return in_array($extension,self::INVALID_EXTENSIONS);
+    }
+
+    private function _get_valid_files()
+    {
+        $arvalid = [];
+        foreach ($this->files as $inputfile => $arfile){
+            if(trim($arfile["name"])!=="")
+                $arvalid[$inputfile] = $arfile;
+        }
+        return $arvalid;
     }
 
     private function _upload()
@@ -72,9 +85,8 @@ class UploadService extends AppService
         $this->_upload();
         return $this->url;
     }
-
-
 }
+
 /*
 'fil-one' =>
 array (
