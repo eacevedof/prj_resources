@@ -8,6 +8,7 @@ class UploadService extends AppService
     private $post;
     private $rootpath;
     private $url;
+
     const INVALID_EXTENSIONS = [
         "php","js","py",
     ];
@@ -21,6 +22,7 @@ class UploadService extends AppService
 
     private function _is_valid()
     {
+        if(!$this->rootpath) throw new Exception("missing env UPLOADROOT");
         if(!$this->post) throw new Exception("Empty post");
         if(!$this->files) throw new Exception("Empty files");
         if(!isset($this->post["folderdomain"]) || trim($this->post["folderdomain"])==="") throw new Exception("No domain selected");
@@ -42,7 +44,6 @@ class UploadService extends AppService
         return in_array($extension,self::INVALID_EXTENSIONS);
     }
 
-    
     private function _upload()
     {
         $extension = $this->_get_extension($this->files["fil-one"]["name"]);

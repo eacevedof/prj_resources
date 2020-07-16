@@ -34,8 +34,9 @@ class UploadController extends AppController
         $oJson = new HelperJson();
         try{
             $oServ = new UploadService($this->get_post(),$this->get_files());
+
             $token = $oServ->get_uploaded();
-            $oJson->set_payload(["url"=>$token])->show();
+            $oJson->set_payload(["url"=>$token,"warning"=>$oServ->get_errors()])->show();
         }
         catch (\Exception $e)
         {
