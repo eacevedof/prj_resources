@@ -3,8 +3,8 @@
  * @author Eduardo Acevedo Farje.
  * @link www.eduardoaf.com
  * @name TheApplication\Components\ComponentConfig
- * @file ComponentConfig.php 1.0.0
- * @date 04-06-2020 12:35 SPAIN
+ * @file ComponentConfig.php 1.1.0
+ * @date 16-07-2020 22:20 SPAIN
  * @observations
  */
 namespace TheFramework\Components\Config;
@@ -58,6 +58,6 @@ class ComponentConfig
         return [];
     }
 
-
+    public function get_content(){return $this->arcontent;}
 
 }//ComponentConfig

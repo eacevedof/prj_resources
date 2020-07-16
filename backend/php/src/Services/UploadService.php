@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 use \Exception;
+use TheFramework\Components\Config\ComponentConfig;
 
 class UploadService extends AppService
 {
@@ -14,10 +15,6 @@ class UploadService extends AppService
         "php","js","py","html"
     ];
 
-    private const ALLOWED_FOLDERS = [
-      "tinymarket.es"
-    ];
-
     private const MAX_SIZE = 10000000;
 
     private const URL_DOMAIN = "http://resources.theframework.es";
@@ -29,6 +26,14 @@ class UploadService extends AppService
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
     }
 
+    private function _get_domains()
+    {
+        $sPathfile = $_ENV["APP_DOMAINS"] ?? __DIR__.DIRECTORY_SEPARATOR."domains.json";
+        //print($sPathfile);die;
+        $arconf = (new ComponentConfig($sPathfile))->get_content();
+        return $arconf;
+    }
+
     private function _is_valid()
     {
         if(!trim($this->rootpath)) throw new Exception("missing env UPLOADROOT");
@@ -37,7 +42,7 @@ class UploadService extends AppService
         if(!isset($this->post["folderdomain"]) || trim($this->post["folderdomain"])==="") throw new Exception("No domain selected");
         $this->arprocess = $this->_get_valid_files();
         if(!$this->arprocess) throw new Exception("No files to process");
-        if(!in_array(trim($this->post["folderdomain"]),self::ALLOWED_FOLDERS)) throw new Exception("Forbidden folderdomain: {$this->post["folderdomain"]}");
+        if(!in_array(trim($this->post["folderdomain"]),$this->_get_domains())) throw new Exception("Forbidden folderdomain: {$this->post["folderdomain"]}");
     }
 
     private function _get_basename($rawname){return basename($rawname);}
