@@ -3,7 +3,7 @@
     "domain": "*",
     "sslenc_method":"AES-256-CBC",
     "sslenc_key":"@12345678@",
-    "sslsalt":"@#$.salt.$#@"
+    "sslsalt":"@#$.saltall.$#@"
   },
   {
     "domain": "localhost:800",

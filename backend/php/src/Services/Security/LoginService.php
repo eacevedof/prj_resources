@@ -62,10 +62,7 @@ class LoginService extends AppService
         return false;
     }
 
-    private function _get_remote_ip()
-    {
-        return $_SERVER["REMOTE_ADDR"]  ?? "127.0.0.1";
-    }
+    private function _get_remote_ip(){return $_SERVER["REMOTE_ADDR"]  ?? "127.0.0.1";}
 
     private function _get_data_tokenized()
     {
@@ -106,7 +103,7 @@ class LoginService extends AppService
         foreach ($users as $user)
         {
             //$hashpass = $this->encdec->get_hashpassword($postpassw);
-            //print_r($hashpass);die;
+            //$this->logd("password: $password, {$user["password"]}");
             if($user["user"] === $username && $this->encdec->check_hashpassword($password,$user["password"])) {
                 return $this->_get_data_tokenized();
             }
