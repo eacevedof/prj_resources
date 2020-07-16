@@ -12,11 +12,13 @@ namespace App\Services;
 
 use App\Traits\AppErrorTrait;
 use App\Traits\AppLogTrait;
+use App\Traits\AppEnvTrait;
 
 class AppService 
 {
     use AppErrorTrait;
     use AppLogTrait;
+    use AppEnvTrait;
 
     public function __construct(){;}
  

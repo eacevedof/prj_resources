@@ -30,12 +30,12 @@ class UploadController extends AppController
     {
         $domain = $_SERVER["REMOTE_HOST"] ?? "*";
         //$this->logd($domain,"upload.index.domain");
-        //$this->request_log();
+        $this->request_log();
         $oJson = new HelperJson();
         try{
-            $oServ = new UploadService($domain,$this->get_files());
+            $oServ = new UploadService($this->get_post(),$this->get_files());
             $token = $oServ->get_uploaded();
-            $oJson->set_payload(["token"=>$token])->show();
+            $oJson->set_payload(["url"=>$token])->show();
         }
         catch (\Exception $e)
         {

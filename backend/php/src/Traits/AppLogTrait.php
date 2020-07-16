@@ -11,7 +11,7 @@ namespace App\Traits;
 
 use TheFramework\Components\ComponentLog;
 
-trait AppLogTrait 
+trait AppLogTrait
 {
     public function log($mxVar,$sTitle=NULL)
     {

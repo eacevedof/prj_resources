@@ -10,15 +10,19 @@
 namespace App\Controllers;
 
 use App\Services\Security\LoginService;
+use App\Traits\AppEnvTrait;
 use TheFramework\Helpers\HelperJson;
 use App\Services\Security\SignatureService;
 use App\Traits\AppErrorTrait;
 use App\Traits\AppLogTrait;
 
+
 class AppController  
 {
     use AppErrorTrait;
     use AppLogTrait;
+    use AppEnvTrait;
+
     protected const KEY_RESOURCE_USERTOKEN = "resource-usertoken";
 
     public function __construct() 
