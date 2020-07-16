@@ -17,13 +17,14 @@ class UploadService extends AppService
 
     private const MAX_SIZE = 10000000;
 
-    private const URL_DOMAIN = "http://resources.theframework.es";
+    private $resources_url;
 
     public function __construct($post,$files)
     {
         $this->post = $post;
         $this->files = $files;
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
+        $this->resources_url = $this->get_env("APP_RESOURCES_URL");
     }
 
     private function _get_domains()
@@ -106,7 +107,7 @@ class UploadService extends AppService
         $r = $this->_get_saved($pathfinal,$inputname);
         if(!$r) $this->add_error("An error ocurred while moving file: $filename to final dir");
         else
-            $this->urls[$inputname] = self::URL_DOMAIN."/$folderdomain/$today/$filefinal";
+            $this->urls[$inputname] = $this->resources_url."/$folderdomain/$today/$filefinal";
     }
 
     private function _upload()
