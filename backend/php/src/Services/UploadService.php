@@ -31,13 +31,13 @@ class UploadService extends AppService
 
     private function _is_valid()
     {
-        if(!$this->rootpath) throw new Exception("missing env UPLOADROOT");
+        if(!trim($this->rootpath)) throw new Exception("missing env UPLOADROOT");
         if(!$this->post) throw new Exception("Empty post");
         if(!$this->files) throw new Exception("Empty files");
         if(!isset($this->post["folderdomain"]) || trim($this->post["folderdomain"])==="") throw new Exception("No domain selected");
         $this->arprocess = $this->_get_valid_files();
         if(!$this->arprocess) throw new Exception("No files to process");
-        if(!in_array($this->post["folderdomain"],self::ALLOWED_FOLDERS)) throw new Exception("Forbidden folderdomain: {$this->post["folderdomain"]}");
+        if(!in_array(trim($this->post["folderdomain"]),self::ALLOWED_FOLDERS)) throw new Exception("Forbidden folderdomain: {$this->post["folderdomain"]}");
     }
 
     private function _get_basename($rawname){return basename($rawname);}
@@ -67,7 +67,8 @@ class UploadService extends AppService
 
     private function _get_cleaned($filename)
     {
-        $cleaned = str_replace(" ","-",$filename);
+        $cleaned = strtolower($filename);
+        $cleaned = str_replace(" ","-",$cleaned);
         return $cleaned;
     }
 
@@ -86,7 +87,7 @@ class UploadService extends AppService
         }
 
         $today = date("Ymd");
-        $folderdomain = $this->post["folderdomain"];
+        $folderdomain = trim($this->post["folderdomain"]);
         $pathdest = "{$this->rootpath}/$folderdomain/{$today}";
         if(!file_exists($pathdest)) mkdir($pathdest, 0777, true);
         $filename = $this->_get_basename($this->arprocess[$inputname]["name"]);
