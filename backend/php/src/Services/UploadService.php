@@ -7,18 +7,20 @@ class UploadService extends AppService
     private $files;
     private $post;
     private $rootpath;
-    private $url;
+    private $urls;
     private $arprocess;
 
-    const INVALID_EXTENSIONS = [
+    private const INVALID_EXTENSIONS = [
         "php","js","py","html"
     ];
 
-    const ALLOWED_FOLDERS = [
+    private const ALLOWED_FOLDERS = [
       "tinymarket.es"
     ];
 
-    const MAX_SIZE = 10000000;
+    private const MAX_SIZE = 10000000;
+
+    private const URL_DOMAIN = "http://resources.theframework.es";
 
     public function __construct($post,$files)
     {
@@ -42,10 +44,7 @@ class UploadService extends AppService
 
     private function _get_extension($pathfile){return pathinfo($pathfile, PATHINFO_EXTENSION);}
 
-    private function _get_saved($pathfinal)
-    {
-        return move_uploaded_file($this->files["fil-one"]["tmp_name"],$pathfinal);
-    }
+    private function _get_saved($pathfinal,$inputname){return move_uploaded_file($this->arprocess[$inputname]["tmp_name"],$pathfinal);}
 
     private function _is_invalid($extension)
     {
@@ -66,39 +65,56 @@ class UploadService extends AppService
         return $arvalid;
     }
 
-    private function _upload()
+    private function _get_cleaned($filename)
     {
-        $extension = $this->_get_extension($this->files["fil-one"]["name"]);
+        $cleaned = str_replace(" ","-",$filename);
+        return $cleaned;
+    }
+
+    private function _upload_single($inputname)
+    {
+        $extension = $this->_get_extension($this->arprocess[$inputname]["name"]);
         if($this->_is_invalid($extension)){
-            $this->add_error("file: {$this->files["fil-one"]["name"]} contains forbidden extension");
+            $this->add_error("file: {$this->arprocess[$inputname]["name"]} not uploaded. Itcontains forbidden extension");
             return;
         }
 
-        if($this->_is_oversized((int)$this->files["fil-one"]["size"])){
-            $this->add_error("file: {$this->files["fil-one"]["name"]} is larger ({$this->files["fil-one"]["size"]}) than allowed {self::MAX_SIZE}");
+        if($this->_is_oversized((int)$this->arprocess[$inputname]["size"])){
+            $maxsize = self::MAX_SIZE;
+            $this->add_error("file: {$this->arprocess[$inputname]["name"]} is larger ({$this->arprocess[$inputname]["size"]}) than allowed {$maxsize}");
             return;
         }
-
 
         $today = date("Ymd");
         $folderdomain = $this->post["folderdomain"];
         $pathdest = "{$this->rootpath}/$folderdomain/{$today}";
         if(!file_exists($pathdest)) mkdir($pathdest, 0777, true);
-        $filename = $this->_get_basename($this->files["fil-one"]["name"]);
+        $filename = $this->_get_basename($this->arprocess[$inputname]["name"]);
 
-        $pathfinal = "{$pathdest}/{$filename}";
+        $now = date("His");
+        $fileclean = $this->_get_cleaned($filename);
+        $filefinal = "{$now}-{$fileclean}";
+        $pathfinal = "{$pathdest}/$filefinal";
         if(is_file($pathfinal)) unlink($pathfinal);
-        //print_r($pathfinal);die;
-        $r = $this->_get_saved($pathfinal);
-        if(!$r)
-            throw new Exception("Error uploading file");
+
+        $r = $this->_get_saved($pathfinal,$inputname);
+        if(!$r) $this->add_error("An error ocurred while moving file: $filename to final dir");
+        else
+            $this->urls[$inputname] = self::URL_DOMAIN."/$folderdomain/$today/$filefinal";
+    }
+
+    private function _upload()
+    {
+        $keys = array_keys($this->arprocess);
+        foreach ($keys as $inputname)
+            $this->_upload_single($inputname);
     }
 
     public function get_uploaded()
     {
         $this->_is_valid();
         $this->_upload();
-        return $this->url;
+        return $this->urls;
     }
 }
 
