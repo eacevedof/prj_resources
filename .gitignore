@@ -8,5 +8,6 @@
 /backend/php/src/config/login.json
 /backend/php/src/config/encdecrypt.json
 /backend/php/public/temp/
+/backend/php/public/resources/
 .idea
 /backend/php/.env.local
