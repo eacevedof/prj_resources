@@ -1,6 +1,5 @@
 <?php
-namespace App\Services\Security;
-use App\Services\AppService;
+namespace App\Services;
 use \Exception;
 
 
@@ -21,6 +20,7 @@ class UploadService extends AppService
     {
         if(!$this->post) throw new \Exception("Empty post");
         if(!$this->files) throw new \Exception("Empty files");
+        if(!isset($this->post["folderdomain"])) throw new \Exception("No domain selected");
     }
 
     private function _is_postok()

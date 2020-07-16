@@ -7,14 +7,20 @@
  * @date 03-06-2020 18:17 SPAIN
  * @observations
  */
-namespace App\Controllers\Security;
+namespace App\Controllers;
 
 use TheFramework\Helpers\HelperJson;
 use App\Controllers\AppController;
-use App\Services\Security\UploadService;
+use App\Services\UploadService;
 
 class UploadController extends AppController
 {
+
+    public function __construct()
+    {
+        //comprueba post[resource-usertoken]
+        $this->check_usertoken();
+    }
 
     /**
      * ruta:
@@ -28,7 +34,7 @@ class UploadController extends AppController
         $oJson = new HelperJson();
         try{
             $oServ = new UploadService($domain,$this->get_files());
-            $token = $oServ->get_token();
+            $token = $oServ->get_uploaded();
             $oJson->set_payload(["token"=>$token])->show();
         }
         catch (\Exception $e)
