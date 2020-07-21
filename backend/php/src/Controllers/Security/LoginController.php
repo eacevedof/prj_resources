@@ -9,7 +9,7 @@
  */
 namespace App\Controllers\Security;
 
-use App\Services\Apify\LoginMiddleService;
+use App\Services\Security\LoginMiddleService;
 use App\Services\Security\LoginService;
 use TheFramework\Helpers\HelperJson;
 use App\Controllers\AppController;
@@ -61,7 +61,7 @@ class LoginController extends AppController
             show(1);
         }
     }
-    
+
     /**
      * ruta:
      *  <dominio>/security/is-valid-token
