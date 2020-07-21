@@ -10,15 +10,15 @@
  */
 namespace App\Services;
 
-use App\Traits\AppErrorTrait;
-use App\Traits\AppLogTrait;
-use App\Traits\AppEnvTrait;
+use App\Traits\ErrorTrait;
+use App\Traits\LogTrait;
+use App\Traits\EnvTrait;
 
 class AppService 
 {
-    use AppErrorTrait;
-    use AppLogTrait;
-    use AppEnvTrait;
+    use ErrorTrait;
+    use LogTrait;
+    use EnvTrait;
 
     public function __construct(){;}
  

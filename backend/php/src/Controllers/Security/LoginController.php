@@ -9,6 +9,7 @@
  */
 namespace App\Controllers\Security;
 
+use App\Services\Apify\LoginMiddleService;
 use App\Services\Security\LoginService;
 use TheFramework\Helpers\HelperJson;
 use App\Controllers\AppController;
@@ -39,7 +40,28 @@ class LoginController extends AppController
             show(1);
         }
     }
-
+    /**
+     * Para servidores intermediarios
+     * El serv tiene que hacer un forward en POST de remoteip y remotehost
+     * ruta:
+     *  <dominio>/security/login-middle
+     */
+    public function middle()
+    {
+        $oJson = new HelperJson();
+        try{
+            $oServ = new LoginMiddleService($this->get_post());
+            $token = $oServ->get_token();
+            $oJson->set_payload(["token"=>$token])->show();
+        }
+        catch (\Exception $e)
+        {
+            $oJson->set_code(HelperJson::CODE_UNAUTHORIZED)->
+            set_error([$e->getMessage()])->
+            show(1);
+        }
+    }
+    
     /**
      * ruta:
      *  <dominio>/security/is-valid-token

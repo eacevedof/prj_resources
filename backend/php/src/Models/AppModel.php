@@ -12,13 +12,13 @@ namespace App\Models;
 use TheFramework\Components\Db\ComponentMysql;
 use TheFramework\Components\Db\ComponentCrud;
 
-use App\Traits\AppErrorTrait;
-use App\Traits\AppLogTrait;
+use App\Traits\ErrorTrait;
+use App\Traits\LogTrait;
 
 class AppModel 
 {
-    use AppErrorTrait;
-    use AppLogTrait;
+    use ErrorTrait;
+    use LogTrait;
     
     protected $oDb;
     protected $sTable;
