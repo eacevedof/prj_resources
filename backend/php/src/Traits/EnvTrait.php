@@ -15,12 +15,12 @@ trait EnvTrait
 
     protected function get_appenv($key){return $this->get_env("APP_{$key}");}
 
-    protected function is_prod(){return $this->get_appenv("ENV")==="prod";}
+    protected function is_envprod(){return $this->get_appenv("ENV")==="prod";}
 
-    protected function is_test(){return $this->get_appenv("ENV")==="test";}
+    protected function is_envtest(){return $this->get_appenv("ENV")==="test";}
 
-    protected function is_dev(){return $this->get_appenv("ENV")==="dev";}
+    protected function is_envdev(){return $this->get_appenv("ENV")==="dev";}
 
-    protected function is_local(){return $this->get_appenv("ENV")==="local";}
+    protected function is_envlocal(){return $this->get_appenv("ENV")==="local";}
 
 }//EnvTrait

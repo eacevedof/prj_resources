@@ -114,28 +114,23 @@ class LoginService extends AppService
     private function validate_package($arpackage)
     {
         //$this->logd($arpackage,"validate_package.arpaackage");
-        if(count($arpackage)!==10)
-            throw new Exception("Wrong token submitted");
+        if(count($arpackage)!==10) throw new Exception("Wrong token submitted");
 
         list($s0,$domain,$s1,$remoteip,$s2,$username,$s3,$password,$s4,$date) = $arpackage;
 
-        if($domain!==$this->domain)
-            throw new Exception("Domain {$this->domain} is not authorized 1");
+        if($domain!==$this->domain) throw new Exception("Domain {$this->domain} is not authorized 1");
 
-        if($remoteip!==$this->_get_remote_ip())
-            throw new Exception("Wrong source {$remoteip} in token");
+        if (!$this->is_envlocal() && $remoteip !== $this->_get_remote_ip()) throw new Exception("Wrong source {$remoteip} in token");
 
         $md5pass = $this->_get_user_password($domain,$username);
         $md5pass = md5($md5pass);
-        if($md5pass!==$password)
-            throw new Exception("Wrong user or password submitted");
+        if($md5pass!==$password) throw new Exception("Wrong user or password submitted");
 
         list($day) = explode("-",$date);
         $now = date("Ymd");
         $moment = new ComponentMoment($day);
         $ndays = $moment->get_ndays($now);
-        if($ndays>30)
-            throw new Exception("Token has expired");
+        if($ndays>30) throw new Exception("Token has expired");
     }
 
 
