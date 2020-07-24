@@ -2,9 +2,9 @@
 /**
  * @author Eduardo Acevedo Farje.
  * @link www.eduardoaf.com
- * @name TheFramework\Components\Db\Context\ComponentContext 
- * @file component_context.php v3.0.0
- * @date 27-04-2020 20:37 SPAIN
+ * @name TheFramework\Components\Db\Context\ComponentContext
+ * @file component_context.php v3.1.0
+ * @date 24-07-2020 20:37 SPAIN
  * @observations
  */
 namespace TheFramework\Components\Db\Context;
@@ -30,12 +30,12 @@ class ComponentContext
             $this->add_error("No context file found: $sPathfile");
             return -1;
         }
-        $this->load_arrayfromjson($sPathfile);
-        $this->load_context_noconf();
-        $this->load_selected();
+        $this->_load_array_fromjson($sPathfile);
+        $this->_load_context_noconf();
+        $this->_load_selected();
     }
 
-    private function load_arrayfromjson($sPathfile)
+    private function _load_array_fromjson($sPathfile)
     {
         if($sPathfile)
             if(is_file($sPathfile))
@@ -45,15 +45,15 @@ class ComponentContext
                 //pr($this->arContexts);die;
             }
             else
-                $this->add_error("load_arrayfromjson: file $sPathfile not found");
+                $this->add_error("_load_array_fromjson: file $sPathfile not found");
         else
-            $this->add_error("load_arrayfromjson: no pathfile passed");
+            $this->add_error("_load_array_fromjson: no pathfile passed");
     }
 
     /**
      * carga la información que no es sensible, por eso se elimina schemas
      */
-    private function load_context_noconf()
+    private function _load_context_noconf()
     {
         foreach($this->arContexts as $arContext)
         {
@@ -62,7 +62,7 @@ class ComponentContext
         }
     }
 
-    private function load_selected()
+    private function _load_selected()
     {
 //pr($this->idSelected);
         //si no se pasa id se asume que no se ha seleccionado un contexto
@@ -75,7 +75,7 @@ class ComponentContext
         //pr($this->arSelected,"arSelected");
     }
 
-    private function get_filter_level_1($sKey, $sValue, $arArray=[])
+    private function _get_filter_level_1($sKey, $sValue, $arArray=[])
     {
         if(!$sKey && !$sValue) return [];
         if(!$arArray) $arArray = $this->arContexts;
@@ -90,13 +90,13 @@ class ComponentContext
 
     public function get_config(){ return $this->arContexts;}
 
-    public function get_by_id($id){ return $this->get_filter_level_1("id",$id); }
+    public function get_by_id($id){ return $this->_get_filter_level_1("id",$id); }
 
-    public function get_by($key,$val){ return $this->get_filter_level_1($key,$val); }
+    public function get_by($key,$val){ return $this->_get_filter_level_1($key,$val); }
 
     public function get_config_by($key,$val)
     {
-        $arConfig = $this->get_filter_level_1($key,$val);
+        $arConfig = $this->_get_filter_level_1($key,$val);
 
         if($arConfig) {
             $arConfig = $arConfig[array_keys($arConfig)[0]];
@@ -108,13 +108,11 @@ class ComponentContext
     public function get_selected(){return $this->arSelected;}
     public function get_selected_id(){return $this->arSelected["ctx"]["id"];}
 
-    public function get_schemas(){
-        return $this->arSelected["ctx"]["schemas"];
-    }
+    public function get_schemas(){return $this->arSelected["ctx"]["schemas"];}
 
     public function get_pubconfig_by($key,$val)
     {
-        $arConfig = $this->get_filter_level_1($key,$val,$this->arContextPublic);
+        $arConfig = $this->_get_filter_level_1($key,$val,$this->arContextPublic);
         if($arConfig)
             return $arConfig[array_keys($arConfig)[0]];
         return [];
@@ -123,6 +121,16 @@ class ComponentContext
     public function get_pubconfig(){return $this->arContextPublic;}
     public function get_errors(){return isset($this->arErrors)?$this->arErrors:[];}
     public function is_error(){return $this->isError;}
+    public function get_dbname($alias){
+        $schemas = $this->get_schemas();
+        foreach ($schemas as $schema){
+            $schalias = $schema["alias"] ?? "";
+            if($schalias === $alias)
+                return $schema["database"] ?? "";
+        }
+        return "";
+    }
+
     private function add_error($sMessage){$this->isError = true; $this->arErrors[] = $sMessage;}
 
 }//ComponentContext
