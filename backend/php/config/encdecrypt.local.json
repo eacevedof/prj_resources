@@ -1,5 +1,12 @@
 [
   {
+    "domain": "self",
+    "domain": "localhost:4000",
+    "sslenc_method":"AES-256-CBC",
+    "sslenc_key":"@12345678@",
+    "sslsalt":"@#$.saltall.$#@"
+  },
+  {
     "domain": "react-restrict-dev",
     "domain": "localhost:3000",
     "sslenc_method":"AES-256-CBC",

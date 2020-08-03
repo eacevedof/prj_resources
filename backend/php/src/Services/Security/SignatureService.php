@@ -1,10 +1,11 @@
 <?php
 namespace App\Services\Security;
+use App\Services\AppService;
 use Matrix\Exception;
 use TheFramework\Components\Config\ComponentConfig;
 use TheFramework\Components\Session\ComponentEncdecrypt;
 
-class SignatureService
+class SignatureService extends AppService
 {
     private $domain = null;
     private $data = null;
@@ -22,7 +23,7 @@ class SignatureService
 
     private function _get_encdec_config()
     {
-        $sPathfile = $_ENV["APP_ENCDECRYPT"] ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.json";
+        $sPathfile = $this->get_env("APP_ENCDECRYPT") ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.json";
         //print($sPathfile);die;
         $arconf = (new ComponentConfig($sPathfile))->get_node("domain",$this->domain);
         return $arconf;
