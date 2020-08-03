@@ -226,7 +226,8 @@ class AppController
     {
         //$this->get_header();
         $domain = $_SERVER["REMOTE_HOST"] ?? "";
-        if(!$domain) $domain = $this->get_header("host");
+        //host es a donde se hace la patición
+        //if(!$domain) $domain = $this->get_header("host");
         if(!$domain) $domain = $this->get_header("origin");
         //if(!$domain) $domain = $_POST[self::KEY_APIFYDOMAIN] ?? "";
         if(!$domain) throw new \Exception("No domain supplied");
