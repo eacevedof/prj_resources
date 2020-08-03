@@ -22,9 +22,9 @@ class SignatureController extends AppController
      */
     public function index()
     {
-        $domain = $_SERVER["REMOTE_HOST"] ?? "*";
         $oJson = new HelperJson();
         try{
+            $domain = $this->get_domain(); //excepcion
             $oServ = new SignatureService($domain,$this->get_post());
             $token = $oServ->get_token();
             $oJson->set_payload(["result"=>$token])->show();
