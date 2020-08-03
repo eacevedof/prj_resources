@@ -14,3 +14,5 @@
 - ~~**context.json**~~ *no procede*
     - configuraciones dbs a publicar 
     
+### Notas:
+- Para poder usar el endpoint `/security/get-password`, habría que configurar **encdecrypt** con el mismo cifrado del dominio sobre el que se desea generar un login.
