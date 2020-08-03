@@ -1,6 +1,7 @@
 [
   {
-    "domain": "*",
+    "domain": "react-restrict-dev",
+    "domain": "localhost:3000",
     "users": [
       {
         "id": 1,
@@ -10,7 +11,8 @@
     ]
   },
   {
-    "domain": "localhost:3000",
+    "domain": "tinymarket",
+    "domain": "localhost:300",
     "users": [
       {
         "id": 1,

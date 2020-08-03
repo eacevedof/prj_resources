@@ -1,6 +1,21 @@
 [
   {
-    "domain": "*",
+    "domain": "react-restrict-dev",
+    "domain": "localhost:3000",
+    "sslenc_method":"AES-256-CBC",
+    "sslenc_key":"@12345678@",
+    "sslsalt":"@#$.saltall.$#@"
+  },
+  {
+    "domain": "tinymarket",
+    "domain": "localhost:300",
+    "sslenc_method":"AES-256-CBC",
+    "sslenc_key":"@12345678@",
+    "sslsalt":"@#$.saltall.$#@"
+  },
+  {
+    "domain": "doblerr",
+    "domain": "localhost:200",
     "sslenc_method":"AES-256-CBC",
     "sslenc_key":"@12345678@",
     "sslsalt":"@#$.saltall.$#@"
