@@ -12,7 +12,7 @@ class UploadService extends AppService
     private $arprocess;
 
     private const INVALID_EXTENSIONS = [
-        "php","js","py","html"
+        "php","js","py","html","phar","java","sh"
     ];
 
     private const MAX_SIZE = 10000000;
@@ -21,6 +21,8 @@ class UploadService extends AppService
 
     public function __construct($post,$files)
     {
+        //$this->logd($post,"uploadservice.POST");
+        //$this->logd($files,"uploadservice.FILES");
         $this->post = $post;
         $this->files = $files;
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
@@ -50,7 +52,17 @@ class UploadService extends AppService
 
     private function _get_extension($pathfile){return pathinfo($pathfile, PATHINFO_EXTENSION);}
 
-    private function _get_saved($pathfinal,$inputname){return move_uploaded_file($this->arprocess[$inputname]["tmp_name"],$pathfinal);}
+    private function _get_saved($pathfinal,$inputname){
+        $r = move_uploaded_file($this->arprocess[$inputname]["tmp_name"],$pathfinal);
+        //$r = move_uploaded_file($this->arprocess[$inputname]["name"],$pathfinal);
+        if(!$r) {
+            $error = "Error moving: {$this->arprocess[$inputname]["tmp_name"]} to $pathfinal";
+            $this->logd($this->arprocess,"arprocess of $inputname");
+            $this->logd($error);
+            $this->add_error($error);
+        }
+        return $r;
+    }
 
     private function _is_invalid($extension)
     {
