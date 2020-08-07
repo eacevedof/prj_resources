@@ -15,8 +15,6 @@ class UploadService extends AppService
         "php","js","py","html","phar","java","sh"
     ];
 
-    private const MAX_SIZE = 10000000;
-
     private $resources_url;
 
     public function __construct($post,$files)
@@ -27,6 +25,21 @@ class UploadService extends AppService
         $this->files = $files;
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
         $this->resources_url = $this->get_env("APP_RESOURCES_URL");
+    }
+
+    public static function get_maxsize()
+    {
+        $max_upload = (int)(ini_get('upload_max_filesize'));
+        $max_post = (int)(ini_get('post_max_size'));
+        $memory_limit = (int)(ini_get('memory_limit'));
+        $upload_mb = min($max_upload, $max_post, $memory_limit);
+        lg("get_maxsize(): upload_max_filesize:$max_upload, post_max_size:$max_post, memory_limit:$memory_limit","get_maxsize");
+        return $upload_mb;
+    }
+    
+    private static function _get_maxsize(){
+        $size = self::get_maxsize()."MB";
+        return get_in_bytes($size);
     }
 
     private function _get_domains()
@@ -45,6 +58,7 @@ class UploadService extends AppService
         if(!isset($this->post["folderdomain"]) || trim($this->post["folderdomain"])==="") throw new Exception("No domain selected");
         $this->arprocess = $this->_get_valid_files();
         if(!$this->arprocess) throw new Exception("No files to process");
+        
         if(!in_array(trim($this->post["folderdomain"]),$this->_get_domains())) throw new Exception("Forbidden folderdomain: {$this->post["folderdomain"]}");
     }
 
@@ -71,7 +85,7 @@ class UploadService extends AppService
         return in_array($extension,self::INVALID_EXTENSIONS);
     }
 
-    private function _is_oversized($size){return $size > self::MAX_SIZE;}
+    private function _is_oversized($size){return $size > $this->_get_maxsize();}
 
     private function _get_valid_files()
     {
@@ -94,13 +108,22 @@ class UploadService extends AppService
     {
         $extension = $this->_get_extension($this->arprocess[$inputname]["name"]);
         if($this->_is_invalid($extension)){
-            $this->add_error("file: {$this->arprocess[$inputname]["name"]} not uploaded. Itcontains forbidden extension");
+            $error = "file: {$this->arprocess[$inputname]["name"]} not uploaded. Itcontains forbidden extension";
+            $this->add_error($error);
+            return;
+        }
+
+        if(((int) $this->arprocess[$inputname]["size"]) === 0 ){
+            $maxsize = $this->_get_maxsize();
+            $error = "filesize is: 0. May be it is bigger than allowed ($maxsize bytes)";
+            $this->add_error($error);
             return;
         }
 
         if($this->_is_oversized((int)$this->arprocess[$inputname]["size"])){
-            $maxsize = self::MAX_SIZE;
-            $this->add_error("file: {$this->arprocess[$inputname]["name"]} is larger ({$this->arprocess[$inputname]["size"]}) than allowed {$maxsize}");
+            $maxsize = $this->_get_maxsize();
+            $error = "file: {$this->arprocess[$inputname]["name"]} is larger ({$this->arprocess[$inputname]["size"]}) than allowed {$maxsize}";
+            $this->add_error($error);
             return;
         }
 

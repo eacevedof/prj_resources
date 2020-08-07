@@ -28,8 +28,6 @@ class UploadController extends AppController
      */
     public function index()
     {
-        $domain = $_SERVER["REMOTE_HOST"] ?? "*";
-        //$this->logd($domain,"upload.index.domain");
         $this->request_log();
         $oJson = new HelperJson();
         try{
@@ -44,6 +42,17 @@ class UploadController extends AppController
             set_error([$e->getMessage()])->
             show(1);
         }
+    }
+
+    /**
+     * ruta:
+     *  <dominio>/get-max-upload-size
+     */
+    public function get_maxuploadsize(){
+        $size = UploadService::get_maxsize()."MB";
+        $size = get_in_bytes($size);
+        $this->log($size,"max size y bytes");
+        (new HelperJson())->set_payload(["maxuploadsize"=>$size])->show();
     }
 
 }//UploadController
