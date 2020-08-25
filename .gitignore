@@ -10,5 +10,6 @@
 /backend/php/config/domains.json
 /backend/php/public/temp/
 /backend/php/public/resources/
+/backend/public/*_custom.log
 .idea
 /backend/php/.env.local
