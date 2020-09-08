@@ -71,8 +71,15 @@ class UploadUrlService extends AppService
     {
         $file = $this->_get_file($url);
         $file = strtolower($file);
-        $slug = $this->_slugify($file);
-        return $slug;
+        $ext = explode(".",$file);
+        $ext = end($ext);
+        $filenoext = str_replace($ext,"",$file);
+        $slug = $this->_slugify($filenoext);
+        return [
+            "filenoext"     => $filenoext,
+            "extension"     => $ext,
+            "slug"          => $slug,
+        ];
     }
 
     public function get_uploaded()
@@ -82,7 +89,7 @@ class UploadUrlService extends AppService
         $files = $this->post["files"] ?? "";
         if(!$files) throw new Exception("Url files not provided");
         
-        
+        //pr($files);die("files:)");
         //$this->_mkdir();
         if(is_string($files)){
             $files = explode(";",$files);
@@ -96,12 +103,17 @@ class UploadUrlService extends AppService
             $content = file_get_contents($urlfile);
             $slug = $this->_get_slug($urlfile);
             $pathdir = $this->_get_mkdir();
-            $pathsave = $pathdir["pathdate"]."/".$slug;
+            if(in_array($slug["extension"],self::INVALID_EXTENSIONS)){
+                $this->add_error($urlfile);
+                continue;
+            }
+            $filesave = "{$slug["slug"]}.{$slug["extension"]}";
+            $pathsave = $pathdir["pathdate"]."/$filesave";
             $r = file_put_contents($pathsave, $content);
             if(!$r)
                 $this->add_error($urlfile);
             else
-                $this->files[] = $this->resources_url."/".$pathdir["public"];
+                $this->files[] = $this->resources_url."/".$pathdir["public"]."/{$filesave}";
         }
 
         return $this->files;
