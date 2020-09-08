@@ -5,7 +5,7 @@ use TheFramework\Components\Config\ComponentConfig;
 
 class UploadUrlService extends AppService
 {
-    private $files;
+    private $files = [];
     private $post;
     private $rootpath;
 
@@ -15,46 +15,44 @@ class UploadUrlService extends AppService
 
     private $resources_url;
 
-    public function __construct($post,$files)
+    public function __construct($post)
     {
         //$this->logd($post,"UploadUrlService.POST");
         //$this->logd($files,"UploadUrlService.FILES");
         $this->post = $post;
-        $this->files = $files;
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
         $this->resources_url = $this->get_env("APP_RESOURCES_URL");
     }
 
-    private function mkdir_temp()
+    private function _get_mkdir()
     {
-        $pathtmp = "$this->rootpath/tmpurl";
+        $public = "{$this->post["folderdomain"]}/".date("Ymd");
+        $pathdate = "$this->rootpath/$public";
         $r = true;
-        if(!is_dir($pathtmp)) $r = mkdir($pathtmp);
-        if(!$r) throw new Exception("tmpurl dir could not be created");
+        if(!is_dir($pathdate)) $r = mkdir($pathdate);
+        if(!$r) throw new Exception("Folder date dir could not created");
+        return [
+            "public" => $public,
+            "pathdate" => $pathdate,
+        ];
     }
 
     private function _slugify($text)
     {
         // replace non letter or digits by -
-        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-
+        $text = preg_replace("~[^\pL\d]+~u", "-", $text);
         // transliterate
-        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-
+        $text = iconv("utf-8", "us-ascii//TRANSLIT", $text);
         // remove unwanted characters
-        $text = preg_replace('~[^-\w]+~', '', $text);
-
+        $text = preg_replace("~[^-\w]+~", "", $text);
         // trim
-        $text = trim($text, '-');
-
+        $text = trim($text, "-");
         // remove duplicate -
-        $text = preg_replace('~-+~', '-', $text);
-
+        $text = preg_replace("~-+~", "-", $text);
         // lowercase
         $text = strtolower($text);
-
         if (empty($text)) {
-            return 'n-a';
+            return "n-a";
         }
 
         return $text;
@@ -79,10 +77,13 @@ class UploadUrlService extends AppService
 
     public function get_uploaded()
     {
+        if(!($this->post["folderdomain"] ?? "")) throw new Exception("No folder domain provided");
+
         $files = $this->post["files"] ?? "";
         if(!$files) throw new Exception("Url files not provided");
-
-        $this->mkdir_temp();
+        
+        
+        //$this->_mkdir();
         if(is_string($files)){
             $files = explode(";",$files);
         }
@@ -94,8 +95,16 @@ class UploadUrlService extends AppService
             //if() extension
             $content = file_get_contents($urlfile);
             $slug = $this->_get_slug($urlfile);
-            //$filetemp = uniqid()
+            $pathdir = $this->_get_mkdir();
+            $pathsave = $pathdir["pathdate"]."/".$slug;
+            $r = file_put_contents($pathsave, $content);
+            if(!$r)
+                $this->add_error($urlfile);
+            else
+                $this->files[] = $this->resources_url."/".$pathdir["public"];
         }
+
+        return $this->files;
     }
 }
 
