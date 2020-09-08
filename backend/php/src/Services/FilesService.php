@@ -27,7 +27,7 @@ class FilesService extends AppService
 
             if (is_dir($filePath)) {
                 foreach ($this->_rec_scan($filePath) as $childFilename) {
-                    $result[] =  "$this->resources_url/$filename/$childFilename";
+                    $result[] =  "$filename/$childFilename";
                 }
             }
             else {
@@ -46,7 +46,7 @@ class FilesService extends AppService
     public function get_files()
     {
         $folder = $this->post["folder"] ?? "";
-        pr(scandir($this->rootpath));die;
+        //pr(scandir($this->rootpath));die;
         $files = $this->_rec_scan($this->rootpath);
         return $files;
     }
