@@ -48,8 +48,13 @@ class FilesService extends AppService
 
     private function _add_domain(&$files)
     {
+        $urlfolder = $this->resources_url."/";
+
+        if(isset($this->post["folder"]))
+            $urlfolder .= "{$this->post["folder"]}/";
+
         foreach ($files as $i=>$file)
-            $files[$i] = $this->resources_url."/".$file;
+            $files[$i] = $urlfolder.$file;
     }
 
     public function get_files()
