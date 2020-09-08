@@ -9,6 +9,8 @@
  */
 namespace App\Controllers;
 
+use \Exception;
+use App\Services\FilesService;
 use TheFramework\Helpers\HelperJson;
 use App\Controllers\AppController;
 use App\Services\UploadService;
@@ -36,13 +38,53 @@ class UploadController extends AppController
             $token = $oServ->get_uploaded();
             $oJson->set_payload(["url"=>$token,"warning"=>$oServ->get_errors()])->show();
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             $oJson->set_code(HelperJson::CODE_UNAUTHORIZED)->
             set_error([$e->getMessage()])->
             show(1);
         }
     }
+
+    /**
+     * ruta:
+     *  <dominio>/folders
+     */
+    public function folders()
+    {
+        $this->request_log();
+        $oJson = new HelperJson();
+        try{
+            $oServ = new FilesService($this->get_post());
+            $oJson->set_payload(["folders"=>$oServ->get_folders()])->show();
+        }
+        catch (Exception $e)
+        {
+            $oJson->set_code(HelperJson::CODE_UNAUTHORIZED)->
+            set_error([$e->getMessage()])->
+            show(1);
+        }
+    }
+
+    /**
+     * ruta:
+     *  <dominio>/files
+     */
+    public function files()
+    {
+        $this->request_log();
+        $oJson = new HelperJson();
+        try{
+            $oServ = new FilesService($this->get_post());
+            $oJson->set_payload(["files"=>$oServ->get_files()])->show();
+        }
+        catch (Exception $e)
+        {
+            $oJson->set_code(HelperJson::CODE_UNAUTHORIZED)->
+            set_error([$e->getMessage()])->
+            show(1);
+        }
+    }    
 
     /**
      * ruta:

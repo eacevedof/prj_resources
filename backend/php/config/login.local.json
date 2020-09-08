@@ -6,7 +6,8 @@
       {
         "id": 1,
         "user": "fulanito",
-        "password": "$2y$10$BdsWPH9Reckevvl6wIVphOzRbfXdTzbtBRkCRBi7BGnIdmt7xiSe2"
+        "password": "menganito",
+        "password": "$2y$10$y7BqJ.BweJkXvUaiROk9deTd6FyKdrFqu8U6nWzT8CQwogWX1g/Im"
       }
     ]
   },
@@ -17,7 +18,7 @@
       {
         "id": 1,
         "user": "fulanito",
-        "password": "$2y$10$BdsWPH9Reckevvl6wIVphOzRbfXdTzbtBRkCRBi7BGnIdmt7xiSe2"
+        "password": "$2y$10$y7BqJ.BweJkXvUaiROk9deTd6FyKdrFqu8U6nWzT8CQwogWX1g/Im"
       }
     ]
   }
