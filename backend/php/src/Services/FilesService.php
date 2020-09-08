@@ -40,7 +40,10 @@ class FilesService extends AppService
     public function get_folders()
     {
         $files = scandir($this->rootpath);
-        return $files;
+        foreach ($files as $i => $file)
+            if(!is_dir($this->rootpath."/".$file) || in_array($file,[".",".."]))
+                unset($files[$i]);
+        return array_values($files);
     }
     
     public function get_files()
