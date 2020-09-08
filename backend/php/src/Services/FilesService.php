@@ -45,12 +45,21 @@ class FilesService extends AppService
                 unset($files[$i]);
         return array_values($files);
     }
-    
+
+    private function _add_domain(&$files)
+    {
+        foreach ($files as $i=>$file)
+            $files[$i] = $this->resources_url."/".$file;
+    }
+
     public function get_files()
     {
+        $pathfolder = $this->rootpath;
         $folder = $this->post["folder"] ?? "";
-        //pr(scandir($this->rootpath));die;
-        $files = $this->_rec_scan($this->rootpath);
+        if($folder) $pathfolder.="/$folder";
+        if(!is_dir($pathfolder)) throw new Exception("Folder '$folder' not found");
+        $files = $this->_rec_scan($pathfolder);
+        $this->_add_domain($files);
         return $files;
     }
 
