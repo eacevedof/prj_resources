@@ -46,6 +46,7 @@ class FilesService extends AppService
     public function get_files()
     {
         $folder = $this->post["folder"] ?? "";
+        pr(scandir($this->rootpath));die;
         $files = $this->_rec_scan($this->rootpath);
         return $files;
     }
