@@ -21,5 +21,16 @@
         "password": "$2y$10$8TskWKN7hUBjYs4/DoniF.iuyzR/PC4C/PJw22QAWzd1UKVMarVxu"
       }
     ]
+  },
+  {
+    "domain": "eduardoaf",
+    "domain": "localhost:400",
+    "users": [
+      {
+        "id": 1,
+        "user": "fulanito",
+        "password": "$2y$10$8TskWKN7hUBjYs4/DoniF.iuyzR/PC4C/PJw22QAWzd1UKVMarVxu"
+      }
+    ]
   }
 ]

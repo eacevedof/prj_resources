@@ -26,5 +26,12 @@
     "sslenc_method":"AES-256-CBC",
     "sslenc_key":"@12345678@",
     "sslsalt":"@#$.saltall.$#@"
+  },
+  {
+    "domain": "eduardoaf",
+    "domain": "localhost:400",
+    "sslenc_method":"AES-256-CBC",
+    "sslenc_key":"@12345678@",
+    "sslsalt":"@#$.saltall.$#@"
   }
 ]
