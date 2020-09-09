@@ -152,7 +152,8 @@ class UploadUrlService extends AppService
                 $this->files[] = $this->resources_url."/".$pathdir["public"]."/{$filesave}";
         }
 
-        return rsort($this->files);
+        rsort($this->files);
+        return $this->files;
     }
 }
 
