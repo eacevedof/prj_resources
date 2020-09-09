@@ -103,6 +103,7 @@ class UploadUrlService extends AppService
     {
         $fileinfo = new \finfo(FILEINFO_MIME_TYPE);
         $mimetype = $fileinfo->buffer($content);
+        $this->logd($mimetype,"mimetype in get_mimetype");
         return explode("/",$mimetype)[1];
     }
     
@@ -137,8 +138,11 @@ class UploadUrlService extends AppService
             //die($urlfile);
             $content = file_get_contents($urlfile);
             $mimetype = $this->_get_mimetype($content);
-
-            if(strlen($extension)>4 && $mimetype=="jpeg") $extension="jpeg";
+            //$this->logd($mimetype,"mimetype");$this->logd($extension,"extension");
+            if(strlen($extension)>3
+                && $extension!="jpeg"
+                && in_array($mimetype,["jpeg","octet-stream"]))
+                $extension="jpeg";
 
             $savename = $slug["slug"];
             $suggestname = $this->_get_suggest_name($rawurl);
