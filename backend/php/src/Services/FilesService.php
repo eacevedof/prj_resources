@@ -68,4 +68,15 @@ class FilesService extends AppService
         return $files;
     }
 
+    public function remove()
+    {
+        //to-do
+        //get url file
+        //replace url_resource with rootpath
+        //check if file exists
+        //unlink file
+
+        $files = [];
+        return $files;
+    }
 }

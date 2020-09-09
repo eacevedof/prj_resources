@@ -82,6 +82,24 @@ class UploadUrlService extends AppService
         ];
     }
 
+    private function _get_suggest_name($urlfile)
+    {
+        if(!strstr($urlfile,"=")) return "";
+        $parts = explode("=",$urlfile);
+        $name = trim($parts[1] ?? "");
+        if(!$name) return "";
+        $name = $this->_slugify($name);
+        return $name;
+    }
+
+    private function _get_real_url($urlfile)
+    {
+        if(!strstr($urlfile,"=")) return trim($urlfile);
+        $parts = explode("=",$urlfile);
+        $url = trim($parts[0] ?? "");
+        return $url;
+    }
+
     public function get_uploaded()
     {
         if(!($this->post["folderdomain"] ?? "")) throw new Exception("No folder domain provided");
@@ -95,20 +113,29 @@ class UploadUrlService extends AppService
             $files = explode(";",$files);
         }
 
-        foreach ($files as $urlfile)
+        foreach ($files as $rawurl)
         {
-            $urlfile = trim($urlfile);
+            $urlfile = $this->_get_real_url($rawurl);
             if(strpos($urlfile,"http")!==0) continue;
             //if() extension
-            $content = file_get_contents($urlfile);
+
             $slug = $this->_get_slug($urlfile);
-            $pathdir = $this->_get_mkdir();
+
             if(in_array($slug["extension"],self::INVALID_EXTENSIONS)){
                 $this->add_error($urlfile);
                 continue;
             }
-            $filesave = "{$slug["slug"]}.{$slug["extension"]}";
-            $pathsave = $pathdir["pathdate"]."/$filesave";
+
+            $pathdir = $this->_get_mkdir();
+            $content = file_get_contents($urlfile);
+
+            $savename = $slug["slug"];
+            $suggestname = $this->_get_suggest_name($rawurl);
+            //$this->logd($urlfile,"urlfile");
+            //$this->logd($suggestname,"suggetsname");
+            if($suggestname) $savename = $suggestname;
+            $filesave = "{$savename}.{$slug["extension"]}";
+            $pathsave = "{$pathdir["pathdate"]}/$filesave";
             $r = file_put_contents($pathsave, $content);
             if(!$r)
                 $this->add_error($urlfile);

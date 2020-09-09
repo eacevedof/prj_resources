@@ -120,4 +120,24 @@ class UploadController extends AppController
         (new HelperJson())->set_payload(["maxuploadsize"=>$size])->show();
     }
 
+    /**
+     * ruta:
+     *  <dominio>/remove
+     */
+    public function remove()
+    {
+        $this->request_log();
+        $oJson = new HelperJson();
+        try{
+            $oServ = new FilesService($this->get_post());
+            $oServ->remove();
+            $oJson->set_payload(["files"=>$oServ->get_files()])->show();
+        }
+        catch (Exception $e)
+        {
+            $oJson->set_code(HelperJson::CODE_UNAUTHORIZED)->
+            set_error([$e->getMessage()])->
+            show(1);
+        }
+    }
 }//UploadController
