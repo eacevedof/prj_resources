@@ -99,6 +99,13 @@ class UploadUrlService extends AppService
         return $url;
     }
 
+    private function _get_mimetype($content)
+    {
+        $fileinfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimetype = $fileinfo->buffer($content);
+        return explode("/",$mimetype)[1];
+    }
+    
     public function get_uploaded()
     {
         if(!($this->post["folderdomain"] ?? "")) throw new Exception("No folder domain provided");
@@ -120,7 +127,8 @@ class UploadUrlService extends AppService
 
             $slug = $this->_get_slug($urlfile);
 
-            if(in_array($slug["extension"],self::INVALID_EXTENSIONS)){
+            $extension = $slug["extension"];
+            if(in_array($extension,self::INVALID_EXTENSIONS)){
                 $this->add_error($urlfile);
                 continue;
             }
@@ -128,13 +136,14 @@ class UploadUrlService extends AppService
             $pathdir = $this->_get_mkdir();
             //die($urlfile);
             $content = file_get_contents($urlfile);
+            $mimetype = $this->_get_mimetype($content);
+
+            if(strlen($extension)>4 && $mimetype=="jpeg") $extension="jpeg";
 
             $savename = $slug["slug"];
             $suggestname = $this->_get_suggest_name($rawurl);
-            //$this->logd($urlfile,"urlfile");
-            //$this->logd($suggestname,"suggetsname");
             if($suggestname) $savename = $suggestname;
-            $filesave = "{$savename}.{$slug["extension"]}";
+            $filesave = "{$savename}.{$extension}";
             $pathsave = "{$pathdir["pathdate"]}/$filesave";
             $r = file_put_contents($pathsave, $content);
             if(!$r)
