@@ -83,8 +83,8 @@ class UploadUrlService extends AppService
 
     private function _get_suggest_name($urlfile)
     {
-        if(!strstr($urlfile,"=")) return "";
-        $parts = explode("=",$urlfile);
+        if(!strstr($urlfile,"::")) return "";
+        $parts = explode("::",$urlfile);
         $name = trim($parts[1] ?? "");
         if(!$name) return "";
         $name = $this->_slugify($name);
@@ -93,8 +93,8 @@ class UploadUrlService extends AppService
 
     private function _get_real_url($urlfile)
     {
-        if(!strstr($urlfile,"=")) return trim($urlfile);
-        $parts = explode("=",$urlfile);
+        if(!strstr($urlfile,"::")) return trim($urlfile);
+        $parts = explode("::",$urlfile);
         $url = trim($parts[0] ?? "");
         return $url;
     }
@@ -126,6 +126,7 @@ class UploadUrlService extends AppService
             }
 
             $pathdir = $this->_get_mkdir();
+            //die($urlfile);
             $content = file_get_contents($urlfile);
 
             $savename = $slug["slug"];
