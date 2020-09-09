@@ -94,6 +94,7 @@ class LoginMiddleService extends AppService
         if(!$username) throw new \Exception("No user provided");
         if(!$password) throw new \Exception("No password provided");
         $config = $this->_get_login_config();
+$this->logd($config,"get_token.get_login_config, username: <$username>, password: <$password>");
         if(!$config) throw new \Exception("Source hostname not authorized");
 
         $users = $config["users"] ?? [];
@@ -103,6 +104,6 @@ class LoginMiddleService extends AppService
                 return $this->_get_data_tokenized();
             }
         }
-        throw new \Exception("Bad user or password");
+        throw new \Exception("Bad user or password in middle");
     }
 }
