@@ -61,6 +61,20 @@ class FilesService extends AppService
             $files[$i] = $urlfolder.$file;
     }
 
+    private function _get_sorted_desc($pathfolder, $files)
+    {
+        $dates = [];
+        foreach ($files as $file){
+            $path = "$pathfolder/$file";
+            //$dates[$file] = filectime($path);
+            $dates[] = ["file"=>$file, "created-at"=>filectime($path)];
+        }
+        //krsort($dates);
+        $createdat = array_column($dates,"created-at");
+        array_multisort($createdat,SORT_DESC, $dates);
+        return $dates;
+    }
+
     public function get_files()
     {
         $pathfolder = $this->rootpath;
@@ -68,6 +82,11 @@ class FilesService extends AppService
         if($folder) $pathfolder.="/$folder";
         if(!is_dir($pathfolder)) throw new Exception("Folder '$folder' not found");
         $files = $this->_rec_scan($pathfolder);
+        //print_r($files);die;
+        $dates = $this->_get_sorted_desc($pathfolder,$files);
+        //pr($dates);
+        $files = array_column($dates,"file");
+        //pr($files);die;
         $this->_add_domain($files);
         return $files;
     }
