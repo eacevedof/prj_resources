@@ -1,7 +1,6 @@
 <?php
 namespace App\Services;
 use \Exception;
-use TheFramework\Components\Config\ComponentConfig;
 
 class FilesService extends AppService
 {
@@ -9,6 +8,10 @@ class FilesService extends AppService
     private $rootpath;
 
     private $resources_url;
+
+    private const INVALID_EXTENSIONS = [
+        "php","js","py","html","phar","java","sh"
+    ];
 
     public function __construct($post)
     {
@@ -72,7 +75,17 @@ class FilesService extends AppService
     {
         $url = trim($url);
         $urlinfo = parse_url($url);
+        $path = explode("/",$urlinfo["path"]);
+        $filename = end($path);
+        $extension = explode(".",$filename);
+        $extension = end($extension);
 
+        return [
+            "url" => $url,
+            "filename" => $filename,
+            "extension" => $extension,
+            "pathlocal" => str_replace($this->resources_url,$this->rootpath,$url),
+        ];
     }
 
     public function remove()
@@ -84,16 +97,23 @@ class FilesService extends AppService
         $removed = [];
         foreach ($urls as $url)
         {
+            if(!$url) continue;
             if(!strstr($url,$this->resources_url)) continue;
-            //$urlinfo = parse_url($url);
-            $pathlocal = str_replace($this->resources_url,$this->rootpath,$url);
-            if(!is_file($pathlocal))
+
+            $urlinfo = $this->_get_pathinfo($url);
+            if(in_array($urlinfo["extension"],self::INVALID_EXTENSIONS))
             {
-                $this->add_error("404: $url, $pathlocal");
+                $this->add_error("403: $url");
                 continue;
             }
 
-            $r = unlink($pathlocal);
+            if(!is_file($urlinfo["pathlocal"]))
+            {
+                $this->add_error("404: $url");
+                continue;
+            }
+
+            $r = unlink($urlinfo["pathlocal"]);
             if(!$r)
             {
                 $this->add_error("501: $url");
