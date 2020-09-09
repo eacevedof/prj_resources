@@ -10,7 +10,7 @@ class FilesService extends AppService
     private $resources_url;
 
     private const INVALID_EXTENSIONS = [
-        "php","js","py","html","phar","java","sh"
+        "php","js","py","html","phar","java","sh","htaccess","jar"
     ];
 
     public function __construct($post)

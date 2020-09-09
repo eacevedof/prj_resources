@@ -12,7 +12,7 @@ class UploadService extends AppService
     private $arprocess;
 
     private const INVALID_EXTENSIONS = [
-        "php","js","py","html","phar","java","sh"
+        "php","js","py","html","phar","java","sh","htaccess","jar"
     ];
 
     private $resources_url;
