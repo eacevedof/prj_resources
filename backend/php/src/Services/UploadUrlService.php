@@ -28,7 +28,7 @@ class UploadUrlService extends AppService
         $public = "{$this->post["folderdomain"]}/".date("Ymd");
         $pathdate = "$this->rootpath/$public";
         $r = true;
-        if(!is_dir($pathdate)) $r = mkdir($pathdate,0777, true);
+        if(!is_dir($pathdate)) $r = mkdir($pathdate,0755, true);
         if(!$r) throw new Exception("Folder date dir could not created");
         return [
             "public" => $public,
