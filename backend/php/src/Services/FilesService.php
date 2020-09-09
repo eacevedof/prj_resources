@@ -68,15 +68,41 @@ class FilesService extends AppService
         return $files;
     }
 
+    private function _get_pathinfo($url)
+    {
+        $url = trim($url);
+        $urlinfo = parse_url($url);
+
+    }
+
     public function remove()
     {
         //to-do
-        //get url file
-        //replace url_resource with rootpath
-        //check if file exists
-        //unlink file
+        $urls = $this->post["urls"] ?? [];
+        if(!$urls) throw new Exception("Files not provided");
 
-        $files = [];
-        return $files;
+        $removed = [];
+        foreach ($urls as $url)
+        {
+            if(!strstr($url,$this->resources_url)) continue;
+            //$urlinfo = parse_url($url);
+            $pathlocal = str_replace($this->resources_url,$this->rootpath,$url);
+            if(!is_file($pathlocal))
+            {
+                $this->add_error("404: $url, $pathlocal");
+                continue;
+            }
+
+            $r = unlink($pathlocal);
+            if(!$r)
+            {
+                $this->add_error("501: $url");
+                continue;
+            }
+
+            $removed[] = $url;
+        }
+
+        return $removed;
     }
 }

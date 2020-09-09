@@ -130,8 +130,7 @@ class UploadController extends AppController
         $oJson = new HelperJson();
         try{
             $oServ = new FilesService($this->get_post());
-            $oServ->remove();
-            $oJson->set_payload(["files"=>$oServ->get_files()])->show();
+            $oJson->set_payload(["urls"=>$oServ->remove(),"warning"=>$oServ->get_errors()])->show();
         }
         catch (Exception $e)
         {
