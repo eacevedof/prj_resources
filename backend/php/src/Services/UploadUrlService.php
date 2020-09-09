@@ -17,8 +17,7 @@ class UploadUrlService extends AppService
 
     public function __construct($post)
     {
-        //$this->logd($post,"UploadUrlService.POST");
-        //$this->logd($files,"UploadUrlService.FILES");
+        $this->logd($post,"UploadUrlService.post");
         $this->post = $post;
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
         $this->resources_url = $this->get_env("APP_RESOURCES_URL");
@@ -29,7 +28,7 @@ class UploadUrlService extends AppService
         $public = "{$this->post["folderdomain"]}/".date("Ymd");
         $pathdate = "$this->rootpath/$public";
         $r = true;
-        if(!is_dir($pathdate)) $r = mkdir($pathdate);
+        if(!is_dir($pathdate)) $r = mkdir($pathdate,0777, true);
         if(!$r) throw new Exception("Folder date dir could not created");
         return [
             "public" => $public,

@@ -15,6 +15,7 @@ class FilesService extends AppService
 
     public function __construct($post)
     {
+        //$this->logd($post,"fileservice.post");
         $this->post = $post;
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
         $this->resources_url = $this->get_env("APP_RESOURCES_URL");
@@ -53,8 +54,8 @@ class FilesService extends AppService
     {
         $urlfolder = $this->resources_url."/";
 
-        if(isset($this->post["folder"]))
-            $urlfolder .= "{$this->post["folder"]}/";
+        if(isset($this->post["folderdomain"]))
+            $urlfolder .= "{$this->post["folderdomain"]}/";
 
         foreach ($files as $i=>$file)
             $files[$i] = $urlfolder.$file;
@@ -63,7 +64,7 @@ class FilesService extends AppService
     public function get_files()
     {
         $pathfolder = $this->rootpath;
-        $folder = $this->post["folder"] ?? "";
+        $folder = $this->post["folderdomain"] ?? "";
         if($folder) $pathfolder.="/$folder";
         if(!is_dir($pathfolder)) throw new Exception("Folder '$folder' not found");
         $files = $this->_rec_scan($pathfolder);
