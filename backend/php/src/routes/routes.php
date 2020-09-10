@@ -5,6 +5,7 @@
 return [   
     ["url"=>"/","controller"=>"App\Controllers\NotFoundController","method"=>"index"],
     ["url"=>"/upload","controller"=>"App\Controllers\UploadController","method"=>"index"],
+    ["url"=>"/upload/multiple","controller"=>"App\Controllers\UploadController","method"=>"multiple"],
     ["url"=>"/upload/by-url","controller"=>"App\Controllers\UploadController","method"=>"by_url"],
     ["url"=>"/remove","controller"=>"App\Controllers\UploadController","method"=>"remove"],
     ["url"=>"/folders","controller"=>"App\Controllers\UploadController","method"=>"folders"],

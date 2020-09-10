@@ -9,12 +9,13 @@
  */
 namespace App\Controllers;
 
-use App\Services\UploadUrlService;
+use App\Controllers\AppController;
 use \Exception;
+use App\Services\UploadService;
+use App\Services\UploadMultipleService;
+use App\Services\UploadUrlService;
 use App\Services\FilesService;
 use TheFramework\Helpers\HelperJson;
-use App\Controllers\AppController;
-use App\Services\UploadService;
 
 class UploadController extends AppController
 {
@@ -35,6 +36,28 @@ class UploadController extends AppController
         $oJson = new HelperJson();
         try{
             $oServ = new UploadService($this->get_post(),$this->get_files());
+
+            $urls = $oServ->get_uploaded();
+            $oJson->set_payload(["url"=>$urls,"warning"=>$oServ->get_errors()])->show();
+        }
+        catch (Exception $e)
+        {
+            $oJson->set_code(HelperJson::CODE_UNAUTHORIZED)->
+            set_error([$e->getMessage()])->
+            show(1);
+        }
+    }
+
+    /**
+     * ruta:
+     *  <dominio>/upload/multiple
+     */
+    public function multiple()
+    {
+        $this->request_log();
+        $oJson = new HelperJson();
+        try{
+            $oServ = new UploadMultipleService($this->get_post(),$this->get_files());
 
             $urls = $oServ->get_uploaded();
             $oJson->set_payload(["url"=>$urls,"warning"=>$oServ->get_errors()])->show();
