@@ -137,6 +137,7 @@ class FilesService extends AppService
         {
             if(!$url) continue;
             if(!strstr($url,$this->resources_url)) continue;
+            if($this->_is_fobidden($url)) continue;
 
             $urlinfo = $this->_get_pathinfo($url);
             if(in_array($urlinfo["extension"],self::INVALID_EXTENSIONS))
