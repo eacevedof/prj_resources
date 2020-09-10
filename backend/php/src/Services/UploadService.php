@@ -38,7 +38,7 @@ class UploadService extends AppService
         return $upload_mb;
     }
     
-    private static function _get_maxsize(){
+    public static function get_maxsize_bytes(){
         $size = self::get_maxsize()."MB";
         return get_in_bytes($size);
     }
@@ -86,7 +86,7 @@ class UploadService extends AppService
         return in_array($extension,self::INVALID_EXTENSIONS);
     }
 
-    private function _is_oversized($size){return $size > $this->_get_maxsize();}
+    private function _is_oversized($size){return $size > $this->get_maxsize_bytes();}
 
     private function _get_valid_files()
     {
@@ -115,14 +115,14 @@ class UploadService extends AppService
         }
 
         if(((int) $this->arprocess[$inputname]["size"]) === 0 ){
-            $maxsize = $this->_get_maxsize();
+            $maxsize = $this->get_maxsize_bytes();
             $error = "filesize is: 0. May be it is bigger than allowed ($maxsize bytes)";
             $this->add_error($error);
             return;
         }
 
         if($this->_is_oversized((int)$this->arprocess[$inputname]["size"])){
-            $maxsize = $this->_get_maxsize();
+            $maxsize = $this->get_maxsize_bytes();
             $error = "file: {$this->arprocess[$inputname]["name"]} is larger ({$this->arprocess[$inputname]["size"]}) than allowed {$maxsize}";
             $this->add_error($error);
             return;

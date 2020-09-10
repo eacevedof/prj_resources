@@ -8,7 +8,7 @@ class UploadMultipleService extends AppService
     private $files;
     private $post;
     private $rootpath;
-    private $urls;
+    private $urls = [];
     private $positions;
 
     private const INVALID_EXTENSIONS = [
@@ -54,7 +54,7 @@ class UploadMultipleService extends AppService
         $r = move_uploaded_file($arinfo["tmp_name"],$pathfinal);
         if(!$r) {
             $error = "Error moving: {$arinfo["tmp_name"]} to $pathfinal";
-            $this->logd($error);
+            $this->logd($error,"uploadmultiple._get_saved");
             $this->add_error($error);
         }
         return $r;
@@ -69,7 +69,7 @@ class UploadMultipleService extends AppService
 
     private function _is_oversized($size){return $size > $this->_get_maxsize();}
 
-    private function _get_maxsize(){ UploadService::get_maxsize();}
+    private function _get_maxsize(){return UploadService::get_maxsize_bytes();}
 
     private function _get_fileinfo($ipos)
     {
@@ -122,6 +122,7 @@ class UploadMultipleService extends AppService
 
     private function _upload_single($arinfo)
     {
+        //$this->logd($arinfo,"multiple.upload_single");
         $today = date("Ymd");
         $folderdomain = trim($this->post["folderdomain"]);
         $pathdest = "{$this->rootpath}/$folderdomain/{$today}";
@@ -151,6 +152,7 @@ class UploadMultipleService extends AppService
         foreach ($this->positions as $ipos)
         {
             $arinfo = $this->_get_fileinfo($ipos);
+            //$this->logd($arinfo,"arinfo de $ipos");
             if($this->_is_validinfo($arinfo))
                 $this->_upload_single($arinfo);
         }
