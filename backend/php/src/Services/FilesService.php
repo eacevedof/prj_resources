@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 use \Exception;
+use phpDocumentor\Reflection\Types\Self_;
 
 class FilesService extends AppService
 {
@@ -75,6 +76,22 @@ class FilesService extends AppService
         return $dates;
     }
 
+    private function _is_fobidden($pathfile)
+    {
+        $parts = explode("/",$pathfile);
+        $parts = end($parts);
+        $parts = explode(".",$parts);
+        $ext = end($parts);
+        return in_array($ext,self::INVALID_EXTENSIONS);
+    }
+
+    private function _remove_forbidden(&$files)
+    {
+        foreach ($files as $i => $file)
+            if($this->_is_fobidden($file))
+                unset($files[$i]);
+    }
+
     public function get_files()
     {
         $pathfolder = $this->rootpath;
@@ -82,6 +99,7 @@ class FilesService extends AppService
         if($folder) $pathfolder.="/$folder";
         if(!is_dir($pathfolder)) throw new Exception("Folder '$folder' not found");
         $files = $this->_rec_scan($pathfolder);
+        $this->_remove_forbidden($files);
         //print_r($files);die;
         $dates = $this->_get_sorted_desc($pathfolder,$files);
         //pr($dates);
