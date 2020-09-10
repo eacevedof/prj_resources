@@ -9,7 +9,7 @@ class UploadMultipleService extends AppService
     private $post;
     private $rootpath;
     private $urls;
-    private $arprocess;
+    private $positions;
 
     private const INVALID_EXTENSIONS = [
         "php","js","py","html","phar","java","sh","htaccess","jar"
@@ -21,24 +21,10 @@ class UploadMultipleService extends AppService
     {
         $this->post = $post;
         $this->files = $files["files"] ?? [];
+        $this->positions = $this->_get_positions();
+
         $this->rootpath = $this->get_env("APP_UPLOADROOT");
         $this->resources_url = $this->get_env("APP_RESOURCES_URL");
-    }
-
-    public static function get_maxsize()
-    {
-        $max_upload = (int)(ini_get('upload_max_filesize'));
-        $max_post = (int)(ini_get('post_max_size'));
-        //$memory_limit = (int)(ini_get('memory_limit'));//en prod me devuelve -1
-        $upload_mb = min($max_upload, $max_post);
-        //en prod son 64M para upload y post
-        //lg("get_maxsize(): upload_max_filesize:$max_upload, post_max_size:$max_post","get_maxsize");
-        return $upload_mb;
-    }
-    
-    private static function _get_maxsize(){
-        $size = self::get_maxsize()."MB";
-        return get_in_bytes($size);
     }
 
     private function _get_domains()
@@ -49,7 +35,7 @@ class UploadMultipleService extends AppService
         return $arconf;
     }
 
-    private function _is_valid()
+    private function _exceptions()
     {
         if(!trim($this->rootpath)) throw new Exception("missing env UPLOADROOT");
         if(!$this->post) throw new Exception("Empty post");
@@ -57,20 +43,17 @@ class UploadMultipleService extends AppService
 
         if(!isset($this->post["folderdomain"]) || trim($this->post["folderdomain"])==="") throw new Exception("No domain selected");
         if(!in_array(trim($this->post["folderdomain"]),$this->_get_domains())) throw new Exception("Forbidden folderdomain: {$this->post["folderdomain"]}");
-
-        $this->arprocess = $this->_get_valid_files();
-        if(!$this->arprocess) throw new Exception("No files to process");
     }
-
+  
     private function _get_basename($rawname){return basename($rawname);}
 
     private function _get_extension($pathfile){return pathinfo($pathfile, PATHINFO_EXTENSION);}
 
-    private function _get_saved($pathfinal,$ipos){
-        $r = move_uploaded_file($this->arprocess[$ipos]["tmp_name"],$pathfinal);
+    private function _get_saved($pathfinal,$arinfo){
+
+        $r = move_uploaded_file($arinfo["tmp_name"],$pathfinal);
         if(!$r) {
-            $error = "Error moving: {$this->arprocess[$ipos]["tmp_name"]} to $pathfinal";
-            $this->logd($this->arprocess,"arprocess of $ipos");
+            $error = "Error moving: {$arinfo["tmp_name"]} to $pathfinal";
             $this->logd($error);
             $this->add_error($error);
         }
@@ -86,13 +69,17 @@ class UploadMultipleService extends AppService
 
     private function _is_oversized($size){return $size > $this->_get_maxsize();}
 
-    private function _get_valid_files()
-    {
-        $arvalid = [];
-        foreach ($this->files as $inputfile => $arfile){
+    private function _get_maxsize(){ UploadService::get_maxsize();}
 
-        }
-        return $arvalid;
+    private function _get_fileinfo($ipos)
+    {
+        return [
+            "name"      => $this->files["name"][$ipos],
+            "type"      => $this->files["type"][$ipos],
+            "tmp_name"  => $this->files["tmp_name"][$ipos],
+            "error"     => $this->files["error"][$ipos],
+            "size"      => (int) $this->files["size"][$ipos],
+        ];
     }
 
     private function _get_cleaned($filename)
@@ -102,34 +89,44 @@ class UploadMultipleService extends AppService
         return $cleaned;
     }
 
-    private function _upload_single($ipos)
+    private function _is_validinfo($arinfo)
     {
-        $extension = $this->_get_extension($this->arprocess[$ipos]["name"]);
-        if($this->_is_invalid($extension)){
-            $error = "file: {$this->arprocess[$ipos]["name"]} not uploaded. Itcontains forbidden extension";
+        if($arinfo["error"]){
+            $error = "file: {$arinfo["name"]} not uploaded. It contains forbidden extension";
             $this->add_error($error);
-            return;
+            return false;
         }
 
-        if(((int) $this->arprocess[$ipos]["size"]) === 0 ){
+        $extension = $this->_get_extension($arinfo["name"]);
+        if($this->_is_invalid($extension)){
+            $error = "file: {$arinfo["name"]} not uploaded. It contains forbidden extension";
+            $this->add_error($error);
+            return false;
+        }
+
+        if($arinfo["size"] === 0 ){
             $maxsize = $this->_get_maxsize();
             $error = "filesize is: 0. May be it is bigger than allowed ($maxsize bytes)";
             $this->add_error($error);
-            return;
+            return false;
         }
 
-        if($this->_is_oversized((int)$this->arprocess[$ipos]["size"])){
+        if($this->_is_oversized($arinfo["size"])){
             $maxsize = $this->_get_maxsize();
-            $error = "file: {$this->arprocess[$ipos]["name"]} is larger ({$this->arprocess[$ipos]["size"]}) than allowed {$maxsize}";
+            $error = "file: {$arinfo["name"]} is larger ({$arinfo["size"]}) than allowed {$maxsize}";
             $this->add_error($error);
-            return;
+            return false;
         }
+        return true;
+    }//_is_validinfo
 
+    private function _upload_single($arinfo)
+    {
         $today = date("Ymd");
         $folderdomain = trim($this->post["folderdomain"]);
         $pathdest = "{$this->rootpath}/$folderdomain/{$today}";
         if(!file_exists($pathdest)) mkdir($pathdest, 0777, true);
-        $filename = $this->_get_basename($this->arprocess[$ipos]["name"]);
+        $filename = $this->_get_basename($arinfo["name"]);
 
         $now = date("His");
         $fileclean = $this->_get_cleaned($filename);
@@ -137,34 +134,85 @@ class UploadMultipleService extends AppService
         $pathfinal = "{$pathdest}/$filefinal";
         if(is_file($pathfinal)) unlink($pathfinal);
 
-        $r = $this->_get_saved($pathfinal,$ipos);
+        $r = $this->_get_saved($pathfinal, $arinfo);
         if(!$r) $this->add_error("An error ocurred while moving file: $filename to final dir");
         else
-            $this->urls[$ipos] = $this->resources_url."/$folderdomain/$today/$filefinal";
+            $this->urls[] = $this->resources_url."/$folderdomain/$today/$filefinal";
+    }
+
+    private function _get_positions()
+    {
+        $names = $this->files["name"] ?? [];
+        return array_keys($names);
     }
 
     private function _upload()
     {
-        $keys = array_keys($this->arprocess);
-        foreach ($keys as $ipos)
-            $this->_upload_single($ipos);
+        foreach ($this->positions as $ipos)
+        {
+            $arinfo = $this->_get_fileinfo($ipos);
+            if($this->_is_validinfo($arinfo))
+                $this->_upload_single($arinfo);
+        }
     }
 
     public function get_uploaded()
     {
-        $this->_is_valid();
+        $this->_exceptions();
         $this->_upload();
         return $this->urls;
     }
 }
 
 /*
-'fil-one' =>
 array (
-'name' => 'trello-397002984.jpg',
-'type' => 'image/jpeg',
-'tmp_name' => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phpKQHL21',
-'error' => 0,
-'size' => 504284,
-),*
+  'files' =>
+  array (
+    'name' =>
+    array (
+      0 => 'trello1131785937.jpg',
+      1 => 'trello-1412509703.jpg',
+      2 => 'trello1857047292.jpg',
+      3 => 'trello-290520641.jpg',
+      4 => 'trello-995103245.jpg',
+      5 => 'trello-1963122971.jpg',
+    ),
+    'type' =>
+    array (
+      0 => 'image/jpeg',
+      1 => 'image/jpeg',
+      2 => 'image/jpeg',
+      3 => 'image/jpeg',
+      4 => 'image/jpeg',
+      5 => 'image/jpeg',
+    ),
+    'tmp_name' =>
+    array (
+      0 => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/php1Mazle',
+      1 => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phpkyw6ve',
+      2 => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phpfYJlf7',
+      3 => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phpj78oKw',
+      4 => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phpzQqq0m',
+      5 => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phplYzBmB',
+    ),
+    'error' =>
+    array (
+      0 => 0,
+      1 => 0,
+      2 => 0,
+      3 => 0,
+      4 => 0,
+      5 => 0,
+    ),
+    'size' =>
+    array (
+      0 => 602682,
+      1 => 203406,
+      2 => 478562,
+      3 => 597316,
+      4 => 237435,
+      5 => 220868,
+    ),
+  ),
+)
 */
