@@ -4,13 +4,20 @@
 
 return [   
     ["url"=>"/","controller"=>"App\Controllers\NotFoundController","method"=>"index"],
+//infrastructure
+    ["url"=>"/get-max-upload-size","controller"=>"App\Controllers\InfrastructureController","method"=>"get_maxuploadsize"],
+
+//upload types
     ["url"=>"/upload","controller"=>"App\Controllers\UploadController","method"=>"index"],
     ["url"=>"/upload/multiple","controller"=>"App\Controllers\UploadController","method"=>"multiple"],
     ["url"=>"/upload/by-url","controller"=>"App\Controllers\UploadController","method"=>"by_url"],
+
+//folder resource interaction
     ["url"=>"/remove","controller"=>"App\Controllers\UploadController","method"=>"remove"],
     ["url"=>"/folders","controller"=>"App\Controllers\UploadController","method"=>"folders"],
     ["url"=>"/files","controller"=>"App\Controllers\UploadController","method"=>"files"],
-    ["url"=>"/get-max-upload-size","controller"=>"App\Controllers\UploadController","method"=>"get_maxuploadsize"],
+
+//security
     ["url"=>"/security/get-password","controller"=>"App\Controllers\Security\PasswordController","method"=>"index"],
     ["url"=>"/security/get-signature","controller"=>"App\Controllers\Security\SignatureController","method"=>"index"],
     ["url"=>"/security/is-valid-signature","controller"=>"App\Controllers\Security\SignatureController","method"=>"is_valid_signature"],

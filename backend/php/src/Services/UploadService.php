@@ -29,19 +29,23 @@ class UploadService extends AppService
 
     public static function get_maxsize()
     {
-        $max_upload = (int)(ini_get('upload_max_filesize'));
-        $max_post = (int)(ini_get('post_max_size'));
-        //$memory_limit = (int)(ini_get('memory_limit'));//en prod me devuelve -1
+        $max_upload = (int)(ini_get("upload_max_filesize"));
+        $max_post = (int)(ini_get("post_max_size"));
+        //$memory_limit = (int)(ini_get("memory_limit"));//en prod me devuelve -1
         $upload_mb = min($max_upload, $max_post);
         //en prod son 64M para upload y post
         //lg("get_maxsize(): upload_max_filesize:$max_upload, post_max_size:$max_post","get_maxsize");
         return $upload_mb;
     }
-    
+
+    //infraestructura
     public static function get_maxsize_bytes(){
         $size = self::get_maxsize()."MB";
         return get_in_bytes($size);
     }
+
+    //infraestructura
+    //public static function get_post_maxsize_bytes(){return (int)(ini_get("post_max_size"));}
 
     private function _get_domains()
     {
@@ -162,12 +166,12 @@ class UploadService extends AppService
 }
 
 /*
-'fil-one' =>
+"fil-one" =>
 array (
-'name' => 'trello-397002984.jpg',
-'type' => 'image/jpeg',
-'tmp_name' => '/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phpKQHL21',
-'error' => 0,
-'size' => 504284,
+"name" => "trello-397002984.jpg",
+"type" => "image/jpeg",
+"tmp_name" => "/private/var/folders/yt/g9dtf4cj40s6m5b4m_rzjz8m0000gn/T/phpKQHL21",
+"error" => 0,
+"size" => 504284,
 ),*
 */

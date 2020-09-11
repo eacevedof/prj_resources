@@ -9,13 +9,13 @@
  */
 namespace App\Controllers;
 
-use App\Controllers\AppController;
 use \Exception;
+use TheFramework\Helpers\HelperJson;
+
 use App\Services\UploadService;
 use App\Services\UploadMultipleService;
 use App\Services\UploadUrlService;
 use App\Services\FilesService;
-use TheFramework\Helpers\HelperJson;
 
 class UploadController extends AppController
 {
@@ -131,17 +131,6 @@ class UploadController extends AppController
             show(1);
         }
     }    
-
-    /**
-     * ruta:
-     *  <dominio>/get-max-upload-size
-     */
-    public function get_maxuploadsize(){
-        $size = UploadService::get_maxsize()."MB";
-        $size = get_in_bytes($size);
-        $this->log($size,"max size y bytes");
-        (new HelperJson())->set_payload(["maxuploadsize"=>$size])->show();
-    }
 
     /**
      * ruta:
