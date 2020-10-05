@@ -29,7 +29,7 @@ class UploadMultipleService extends AppService
 
     private function _get_domains()
     {
-        $sPathfile = $_ENV["APP_DOMAINS"] ?? __DIR__.DIRECTORY_SEPARATOR."domains.json";
+        $sPathfile = $_ENV["APP_DOMAINS"] ?? __DIR__.DIRECTORY_SEPARATOR."domains.prod.json";
         //print($sPathfile);die;
         $arconf = (new ComponentConfig($sPathfile))->get_content();
         return $arconf;

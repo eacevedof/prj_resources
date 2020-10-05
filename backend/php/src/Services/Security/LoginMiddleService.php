@@ -17,14 +17,14 @@ class LoginMiddleService extends AppService
     {
         //el post con los datos de usuario
         $this->post = $post;
-        //necesito el dominio pq la encriptación va por dominio en el encdecrypt.json
+        //necesito el dominio pq la encriptación va por dominio en el encdecrypt.prod.json
         $this->origin = $this->post["remotehost"] ?? "";
         $this->_load_encdec();
     }
 
     private function _get_encdec_config()
     {
-        $sPathfile = $_ENV["APP_ENCDECRYPT"] ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.json";
+        $sPathfile = $_ENV["APP_ENCDECRYPT"] ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.prod.json";
         //$this->logd($sPathfile,"pathfile of encdecrypt");
         $arconf = (new ComponentConfig($sPathfile))->get_node("domain",$this->origin);
         return $arconf;

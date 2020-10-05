@@ -17,7 +17,7 @@ class LoginService extends AppService
 
     public function __construct($domain, $arlogin=[])
     {
-        //necesito el dominio pq la encriptación va por dominio en el encdecrypt.json
+        //necesito el dominio pq la encriptación va por dominio en el encdecrypt.prod.json
         $this->domain = $domain;
         //el post con los datos de usuario
         $this->arlogin = $arlogin;
@@ -26,7 +26,7 @@ class LoginService extends AppService
 
     private function _get_encdec_config()
     {
-        $sPathfile = $_ENV["APP_ENCDECRYPT"] ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.json";
+        $sPathfile = $_ENV["APP_ENCDECRYPT"] ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.prod.json";
         //$this->logd($sPathfile,"pathfile");
         $arconf = (new ComponentConfig($sPathfile))->get_node("domain",$this->domain);
         return $arconf;

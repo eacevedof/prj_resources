@@ -23,7 +23,7 @@ class SignatureService extends AppService
 
     private function _get_encdec_config()
     {
-        $sPathfile = $this->get_env("APP_ENCDECRYPT") ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.json";
+        $sPathfile = $this->get_env("APP_ENCDECRYPT") ?? __DIR__.DIRECTORY_SEPARATOR."encdecrypt.prod.json";
         //print($sPathfile);die;
         $arconf = (new ComponentConfig($sPathfile))->get_node("domain",$this->domain);
         return $arconf;
